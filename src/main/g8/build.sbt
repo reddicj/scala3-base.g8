@@ -1,7 +1,7 @@
 name := "$name;format="lower,hyphen"$"
 organization := "$base_package$"
 
-scalaVersion := "3.0.1"
+scalaVersion := "3.1.0"
 scalacOptions := Settings.compilerOptions
 semanticdbEnabled := true
 semanticdbVersion := scalafixSemanticdb.revision
