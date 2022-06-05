@@ -1,12 +1,29 @@
+import BuildHelper._
+
 name := "$name;format="lower,hyphen"$"
 organization := "$base_package$"
 
-scalaVersion := "3.1.0"
-scalacOptions := Settings.compilerOptions
-semanticdbEnabled := true
-semanticdbVersion := scalafixSemanticdb.revision
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
-ThisBuild / scalafixScalaBinaryVersion := "3.0"
+ThisBuild / scalaVersion := "$scala_version$"
+ThisBuild / scalacOptions := Settings.compilerOptions
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+ThisBuild / scalafixDependencies ++= List(
+  "com.github.liancheng" %% "organize-imports" % "0.5.0",
+  "com.github.vovapolu"  %% "scaluzzi"         % "0.1.21"
+)
+ThisBuild / testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
-libraryDependencies ++= Libs.libraryDependencies
-testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
+addCommandAlias("fmt", "; scalafmtSbt; scalafmtAll")
+addCommandAlias("fix", "; scalafixAll; scalafmtSbt; scalafmtAll")
+addCommandAlias("check", "; scalafmtSbtCheck; scalafmtCheckAll; scalafixAll --check")
+
+lazy val root = (project in file("."))
+  .configs(IntegrationTest)
+  .settings(
+    welcomeMessage,
+    buildInfoSettings("$name;format="lower,hyphen"$"),
+    Defaults.itSettings,
+    Libs.dependencies,
+    inConfig(IntegrationTest)(scalafixConfigSettings(IntegrationTest))
+  )
+  .enablePlugins(BuildInfoPlugin)
